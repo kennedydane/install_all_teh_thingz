@@ -1,0 +1,8 @@
+---
+# tasks file for environment
+
+- name: Install relevent environment packages
+  include: tasks.yaml
+  become: yes
+  tags: environment
+

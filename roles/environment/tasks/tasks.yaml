@@ -1,0 +1,31 @@
+---
+# tasks file for environment
+- name: Install git
+  apt:
+    name: git
+    state: latest
+  tags: git
+
+- name: Setup pyenv and pipenv
+  block:
+    - name: Install pyenv
+      git:
+        repo: 'https://github.com/pyenv/pyenv.git'
+        dest: '~/.pyenv'
+      tags: pyenv
+  become: no
+
+
+#- name: Install zsh and oh-my-zsh
+#  block:
+#    - name: Install zsh
+#      apt:
+#        name: zsh
+#        state: latest
+#      tags: zsh
+#    - name: Install oh-my-zsh
+#      block:
+#        - name: clone ohmyzsh repository
+#          git:
+#            repo: 
+#      tags: ohmyzsh
