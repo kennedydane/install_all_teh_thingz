@@ -1,0 +1,15 @@
+---
+# tasks file for roles/base
+
+- name: Install package that apt module uses
+  package:
+    name: python3-apt
+    state: present
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+    update_cache: yes
+    autoremove: yes
+
+

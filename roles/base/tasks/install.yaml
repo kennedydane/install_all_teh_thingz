@@ -1,0 +1,28 @@
+---
+# tasks file for roles/base
+
+- name: Install commonly used packages
+  apt:
+    name:
+      - 'build-essential'
+      - 'curl'
+      - 'libssl-dev'
+      - 'libbz2-dev'
+      - 'libffi-dev'
+      - 'liblzma-dev'
+      - 'libncurses5-dev'
+      - 'libreadline-dev'
+      - 'libsqlite3-dev'
+      - 'libxml2-dev'
+      - 'libxmlsec1-dev'
+      - 'llvm'
+      - 'make'
+      - 'tk-dev'
+      - 'wget'
+      - 'xz-utils'
+      - 'zlib1g-dev'
+      
+    update_cache: yes
+    autoremove: yes
+
+# make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
