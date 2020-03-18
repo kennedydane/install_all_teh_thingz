@@ -13,7 +13,28 @@
         repo: 'https://github.com/pyenv/pyenv.git'
         dest: '~/.pyenv'
       tags: pyenv
-  become: no
+      become: no
+    - name: Install packages that pyenv requires when installing environments
+      apt:
+        name:
+          - 'build-essential'
+          - 'curl'
+          - 'libssl-dev'
+          - 'libbz2-dev'
+          - 'libffi-dev'
+          - 'liblzma-dev'
+          - 'libncurses5-dev'
+          - 'libreadline-dev'
+          - 'libsqlite3-dev'
+          - 'libxml2-dev'
+          - 'libxmlsec1-dev'
+          - 'llvm'
+          - 'make'
+          - 'tk-dev'
+          - 'wget'
+          - 'xz-utils'
+          - 'zlib1g-dev'
+      tags: pyenv
 
 
 #- name: Install zsh and oh-my-zsh

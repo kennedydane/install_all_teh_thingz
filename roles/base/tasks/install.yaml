@@ -6,22 +6,11 @@
     name:
       - 'build-essential'
       - 'curl'
-      - 'libssl-dev'
-      - 'libbz2-dev'
-      - 'libffi-dev'
-      - 'liblzma-dev'
-      - 'libncurses5-dev'
-      - 'libreadline-dev'
-      - 'libsqlite3-dev'
-      - 'libxml2-dev'
-      - 'libxmlsec1-dev'
-      - 'llvm'
+      - 'git'
       - 'make'
-      - 'tk-dev'
+      - 'net-tools'
       - 'wget'
       - 'xz-utils'
-      - 'zlib1g-dev'
-      
     update_cache: yes
     autoremove: yes
 
