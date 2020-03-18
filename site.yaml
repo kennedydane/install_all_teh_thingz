@@ -1,4 +1,4 @@
 ---
 - import_playbook: base.yaml
 - import_playbook: environment.yaml
-
+- import_playbook: apps.yaml
