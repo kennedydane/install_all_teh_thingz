@@ -7,11 +7,20 @@
       - 'build-essential'
       - 'curl'
       - 'git'
+      - 'libmariadb-dev'
       - 'make'
+      - 'mariadb-client'
+      - 'mariadb-server'
       - 'net-tools'
+      - 'pkg-config'
+      - 'postgresql'
+      - 'postgresql-client'
+      - 'postgresql-common'
+      - 'traceroute'
       - 'wget'
       - 'xz-utils'
     update_cache: yes
     autoremove: yes
 
 # make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+# mariadb-server mariadb-client libmariadb-dev
