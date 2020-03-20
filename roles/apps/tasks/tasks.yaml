@@ -39,3 +39,14 @@
         state: present
         classic: yes
       tags: vscode
+
+- name: Install communications software
+  block:
+    - name: Install Slack
+      snap:
+        name: slack
+        state: present
+        classic: yes
+      tags: slack
+
+          
