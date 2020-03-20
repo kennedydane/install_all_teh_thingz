@@ -10,6 +10,7 @@
       - 'libldap2-dev'
       - 'libmariadb-dev'
       - 'libpq-dev'
+      - 'libsasl2-dev'
       - 'make'
       - 'mariadb-client'
       - 'mariadb-server'
