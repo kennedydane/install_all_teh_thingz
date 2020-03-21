@@ -36,17 +36,47 @@
           - 'zlib1g-dev'
       tags: pyenv
 
+- name: Install Nerd Fonts
+  block:
+    - name: Clone Nerd Fonts Repo
+      git:
+        repo: https://github.com/ryanoasis/nerd-fonts.git
+        dest: ~/dev/nerd-fonts
+        depth: 1
+    - name: Install the patched fonts
+      shell:
+        cmd: "./install.sh {{ item }}"
+        chdir: ~/dev/nerd-fonts
+      with_items:
+        - "DejaVuSansMono"
+        - "Go-Mono"
+        - "HeavyData"
+        - "IBMPlexMono"
+        - "Inconsolata"
+        - "JetBrainsMono"
+        - "ProFont"
+        - "RobotoMono"
+        - "SourceCodePro"
+        - "Ubuntu"
+        - "UbuntuMono"
+  become: no
+  tags: nerdfonts
 
-#- name: Install zsh and oh-my-zsh
-#  block:
-#    - name: Install zsh
-#      apt:
-#        name: zsh
-#        state: latest
-#      tags: zsh
-#    - name: Install oh-my-zsh
-#      block:
-#        - name: clone ohmyzsh repository
-#          git:
-#            repo: 
-#      tags: ohmyzsh
+- name: Install zsh and oh-my-zsh
+  block:
+    - name: Install zsh
+      apt:
+        name: zsh
+        state: latest
+      tags: zsh
+    - name: Install oh-my-zsh
+      block:
+        - name: Download oh-my-zsh install script
+          get_url:
+            url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+            dest: /tmp/install_ohmyzsh.tmp
+            mode: u=rx,g=r,o=r
+        - name: Run oh-my-zsh install script
+          shell: /tmp/install_ohmyzsh.tmp
+      become: no
+      tags: ohmyzsh
