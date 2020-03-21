@@ -103,7 +103,7 @@
                 mode: u=rw,g=,o=
             - name: Install .zshenv
               copy:
-                src: zshrc
+                src: zshenv
                 dest: ~/.zshenv
                 mode: u=rw,g=,o=
       become: no
