@@ -33,11 +33,18 @@
             state: latest
       tags: sublime
             
-    - name: Install vscode
-      snap:
-        name: code
-        state: present
-        classic: yes
+    - name: Install vscode (and insiders)
+      block:
+        - name: install vscode snap
+          snap:
+            name: code
+            state: present
+            classic: yes
+        - name: install vscode-insiders snap
+          snap:
+            name: code-insiders
+            state: present
+            classic: yes
       tags: vscode
 
 - name: Install communications software
