@@ -34,6 +34,7 @@
           - 'wget'
           - 'xz-utils'
           - 'zlib1g-dev'
+        state: present
       tags: pyenv
 
 - name: Install Nerd Fonts
