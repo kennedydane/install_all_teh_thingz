@@ -56,4 +56,22 @@
         classic: yes
       tags: slack
 
-          
+- name: Install graphics programs
+  block:
+    - name: Install inkscape
+      snap:
+        name: inkscape
+        state: present
+        classic: no
+      tags: inkscape
+    - name: Install dia
+      apt:
+        name: dia
+        state: present
+      tags: dia
+    - name: Install gimp
+      snap:
+        name: gimp
+        state: present
+        classic: no
+      tags: gimp
