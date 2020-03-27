@@ -6,6 +6,19 @@
     state: latest
   tags: git
 
+- name: Install and setup tmux
+  block:
+    - name: Install tmux
+      apt:
+        name: tmux
+        state: present
+    - name: Configure tmux
+      copy:
+        src: tmux.conf
+        dest: ~/.tmux.conf
+      become: no
+  tags: tmux
+
 - name: Setup pyenv and pipenv
   block:
     - name: Install pyenv
