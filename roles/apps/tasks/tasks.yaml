@@ -66,9 +66,17 @@
       tags: inkscape
     - name: Install dia
       apt:
-        name: dia
+        name:
+          - dia
         state: present
       tags: dia
+    - name: Install graphviz
+      apt:
+        name:
+          - graphviz
+          - graphviz-dev
+        state: present
+      tags: graphviz
     - name: Install gimp
       snap:
         name: gimp
