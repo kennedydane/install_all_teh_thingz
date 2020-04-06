@@ -1,5 +1,19 @@
 ---
 # tasks file for environment
+- name: Set up ssh config
+  block:
+    - name: Set up .ssh/config
+      copy:
+        src: ssh_config
+        dest: ~/.ssh/config
+    - name: Create Control Master Directory
+      file:
+        path: ~/.ssh/cm_temp
+        state: directory
+        mode: u=rwx,g=rwx,o=
+  become: no
+  tags: ssh
+
 - name: Install git
   apt:
     name: git
