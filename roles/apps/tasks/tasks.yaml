@@ -130,8 +130,22 @@
             state: present
             line: "export GOPATH=~/go/bin"
           become: no
-
       tags: golang
+    
+    - name: Install singularity
+      block:
+        - name: Install singularity prerequesites
+          apt:
+            name:
+              - build-essential
+              - libssl-dev
+              - uuid-dev
+              - libgpgme11-dev
+              - squashfs-tools
+              - libseccomp-dev
+              - pkg-config
+            state: present
+      tags: singularity
 
 - name: Install communications software
   block:
