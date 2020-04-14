@@ -115,10 +115,13 @@
             creates: /opt/go
         - name: Add go binaries to PATH
           lineinfile:
-            path: /etc/zsh/zprofile
+            path: "{{ item }}"
             state: present
             line: "export PATH=$PATH:/opt/go/bin"
             regexp: '^export PATH=$PATH:/opt/go/bin$'
+          loop:
+            - /etc/zsh/zprofile
+            - /etc/profile
         - name: Set up GOPATH
           file:
             path: ~/go
@@ -180,13 +183,15 @@
           become: yes
         - name: Add singularity to the PATH
           lineinfile:
-            path: /etc/zsh/zprofile
+            path: "{{ item }}"
             state: present
             line: "export PATH=$PATH:/opt/singularity/bin"
             regexp: '^export PATH=$PATH:/opt/singularity/bin$'
           become: yes
+          loop:
+            - /etc/zsh/zprofile
+            - /etc/profile
       become: no
-
       tags: singularity
 
 - name: Install communications software
