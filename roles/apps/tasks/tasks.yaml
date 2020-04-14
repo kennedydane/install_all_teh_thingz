@@ -97,6 +97,7 @@
           user:
             name: "{{ ansible_user_id }}"
             groups: docker
+            append: yes
       tags: docker
 
     - name: Install golang
@@ -145,6 +146,47 @@
               - libseccomp-dev
               - pkg-config
             state: present
+          become: yes
+        - name: Download singularity 3.5.3
+          get_url:
+            url: https://github.com/sylabs/singularity/releases/download/v3.5.3/singularity-3.5.3.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/singularity-3.5.3.tar.gz
+            checksum: sha256:0c76f1e3808bf4c10e92b17150314b2b816be79f8101be448a6e9d7a96c9e486
+        - name: Ensure singularity exists in GOPATH
+          file:
+            path: ~/go/src/github.com/sylabs
+            state: directory
+            mode: u=rwx,g=rx,o=
+        - name: Extract singularity to GOPATH
+          unarchive:
+            src: ~{{ ansible_user_id }}/Downloads/singularity-3.5.3.tar.gz
+            dest: ~{{ ansible_user_id }}/go/src/github.com/sylabs
+            creates: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity
+        - name: run mconfig
+          command:
+            argv:
+              - ./mconfig
+              - --prefix=/opt/singularity
+            creates: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir/Makefile
+          args:
+            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity
+        - name: Make singularity
+          make:
+            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir
+        - name: Install singularity
+          make:
+            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir
+            target: install
+          become: yes
+        - name: Add singularity to the PATH
+          lineinfile:
+            path: /etc/zsh/zprofile
+            state: present
+            line: "export PATH=$PATH:/opt/singularity/bin"
+            regexp: '^export PATH=$PATH:/opt/singularity/bin$'
+          become: yes
+      become: no
+
       tags: singularity
 
 - name: Install communications software
