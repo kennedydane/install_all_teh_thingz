@@ -132,7 +132,13 @@
           lineinfile:
             path: ~/.zshenv
             state: present
-            line: "export GOPATH=~/go/bin"
+            line: "export GOPATH=~{{ ansible_user_id }}/go"
+          become: no
+        - name: add GOPATH/bin to profile
+          lineinfile:
+            path: ~/.zshenv
+            state: present
+            line: "export PATH=${PATH}:${GOPATH}/bin"
           become: no
       tags: golang
     
@@ -193,6 +199,34 @@
             - /etc/profile
       become: no
       tags: singularity
+
+    - name: Install Julia
+      block:
+        - name: Download Julia
+          get_url:
+            url: https://julialang-s3.julialang.org/bin/linux/x64/1.4/julia-1.4.0-linux-x86_64.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/julia-1.4.0-linux-x86_64.tar.gz
+            checksum: sha256:30d126dc3598f3cd0942de21cc38493658037ccc40eb0882b3b4c418770ca751
+        - name: Install Julia
+          unarchive:
+            src: ~{{ ansible_user_id }}/Downloads/julia-1.4.0-linux-x86_64.tar.gz
+            dest: /opt/
+            creates: /opt/julia-1.4.0
+          become: yes
+        - name: Add Julia to the PATH
+          lineinfile:
+            path: "{{ item }}"
+            state: present
+            line: "export PATH=$PATH:/opt/julia-1.4.0/bin"
+            regexp: '^export PATH=$PATH:/opt/julia-1.4.0/bin$'
+          become: yes
+          loop:
+            - /etc/zsh/zprofile
+            - /etc/profile
+
+      become: no
+      tags: julia
+
 
 - name: Install communications software
   block:
