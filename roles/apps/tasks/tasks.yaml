@@ -47,6 +47,9 @@
             classic: yes
       tags: vscode
 
+
+- name: Install Programming thingz
+  block:
     - name: Install DockerCE
       block:
         - name: Uninstall old Docker
@@ -95,6 +98,40 @@
             name: "{{ ansible_user_id }}"
             groups: docker
       tags: docker
+
+    - name: Install golang
+      block:
+        - name: Download go tarball
+          get_url:
+            url: https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+            dest: ~/Downloads/go1.14.2.linux-amd64.tar.gz
+            checksum: sha256:6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3
+          become: no
+        - name: Extract go to /opt
+          unarchive:
+            src: ~{{ ansible_user_id }}/Downloads/go1.14.2.linux-amd64.tar.gz
+            dest: /opt/
+            creates: /opt/go
+        - name: Add go binaries to PATH
+          lineinfile:
+            path: /etc/zsh/zprofile
+            state: present
+            line: "export PATH=$PATH:/opt/go/bin"
+            regexp: '^export PATH=$PATH:/opt/go/bin$'
+        - name: Set up GOPATH
+          file:
+            path: ~/go
+            state: directory
+            mode: u=rwx,g=rx,o=
+          become: no
+        - name: add GOPATH to profile
+          lineinfile:
+            path: ~/.zshenv
+            state: present
+            line: "export GOPATH=~/go/bin"
+          become: no
+
+      tags: golang
 
 - name: Install communications software
   block:
