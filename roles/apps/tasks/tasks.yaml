@@ -223,9 +223,68 @@
           loop:
             - /etc/zsh/zprofile
             - /etc/profile
-
       become: no
       tags: julia
+
+    - name: Install R
+      block:
+        - name: Install some prerequisites
+          apt:
+            name:
+              - dirmngr
+              - git
+              - texlive
+              - texlive-extra-utils
+              - texlive-fonts-extra
+              - texlive-latex-extra
+              - texlive-pictures
+              - texlive-pstricks
+              - texlive-publishers
+              - texlive-science
+              - texlive-xetex
+              - ca-certificates
+              - gdebi-core
+              - systemd
+              - wget
+              - libcurl4-openssl-dev
+              - libnetcdf-dev
+              - libssl-dev
+              - libxml2-dev
+              - libcairo2-dev
+              - libxt-dev
+              - patchelf
+            state: present
+        - name: Add R GPG key
+          apt_key:
+            keyserver: keyserver.ubuntu.com
+            id: E298A3A825C0D65DFD57CBB651716619E084DAB9
+            state: present
+        - name: Add R repository
+          apt_repository:
+            repo: "deb http://cran.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran35/"
+            state: present
+            filename: R-project
+        - name: Install R
+          apt:
+            name:
+              - r-base
+              - r-base-core
+              - r-base-dev
+              - r-recommended
+              - r-base-html
+              - r-doc-html
+            state: present
+            update_cache: yes
+        - name: Download RStudio Desktop 1.2.5042
+          get_url:
+            url: https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.2.5042-amd64.deb
+            dest: ~{{ ansible_user_id }}/Downloads/rstudio-1.2.5042-amd64.deb
+            checksum: sha256:99e0f57b7426aa180db1b08163eba7a1a2e1ab033f2a632f6b852d7b23ca0f98
+          become: no
+        - name: Install RStudio Desktop 1.2.5042
+          apt:
+            deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.2.5042-amd64.deb
+      tags: R
 
 
 - name: Install communications software
