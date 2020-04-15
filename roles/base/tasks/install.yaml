@@ -8,6 +8,7 @@
       - 'curl'
       - 'debootstrap'
       - 'git'
+      - 'libboost-all-dev'
       - 'libldap2-dev'
       - 'libmariadb-dev'
       - 'libpq-dev'
