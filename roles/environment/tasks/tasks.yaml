@@ -136,3 +136,92 @@
                 mode: u=rw,g=,o=
       become: no
       tags: ohmyzsh
+
+- name: Download and Install redis
+  block:
+    - name: Download redis
+      get_url:
+        url: http://download.redis.io/releases/redis-5.0.9.tar.gz
+        dest: ~{{ ansible_user_id }}/Downloads/redis-5.0.9.tar.gz
+        checksum: sha256:53d0ae164cd33536c3d4b720ae9a128ea6166ebf04ff1add3b85f1242090cb85
+    - name: Uncompress redis
+      unarchive:
+        src: ~{{ ansible_user_id }}/Downloads/redis-5.0.9.tar.gz
+        dest: /tmp
+        creates: /tmp/redis-5.0.9
+    - name:
+      lineinfile:
+        path: /tmp/redis-5.0.9/src/Makefile
+        regex: "^PREFIX?=/usr/local$"
+        line: "PREFIX=/opt/redis/5.0.9"
+    - name: Compile redis
+      make:
+        chdir: /tmp/redis-5.0.9
+    - name: Install redis
+      make:
+        chdir: /tmp/redis-5.0.9
+        target: install
+      become: yes
+    - name: Add redis to PATH
+      lineinfile:
+        path: "{{ item }}"
+        state: present
+        line: "export PATH=$PATH:/opt/redis/5.0.9/bin"
+        regexp: '^export PATH=$PATH:/opt/redis/5.0.9/bin$'
+      loop:
+        - /etc/zsh/zprofile
+        - /etc/profile
+      become: yes
+    - name : Configure current redis
+      file:
+        src: /opt/redis/5.0.9
+        dest: /opt/redis/current
+        state: link
+      become: yes
+    - name: Create redis group
+      group:
+        name: redis
+        system: yes
+      become: yes
+    - name: Create redis user
+      user:
+        name: redis
+        group: redis
+        create_home: no
+        system: yes
+      become: yes
+    - name: Set up redis directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: o=rwx,g=rx,o=rx
+        owner: redis
+        group: redis
+      loop:
+        - /etc/redis
+        - /var/redis
+        - /var/redis/6379
+      become: yes
+    - name: Configure redis
+      block:
+        - name: Copy redis config across
+          copy:
+            src: redis.conf
+            dest: /etc/redis/6379.conf
+            owner: redis
+            group: redis
+        - name: copy init script across
+          copy:
+            src: redis.service
+            dest: /etc/systemd/system/redis.service
+            owner: redis
+            group: redis
+      become: yes
+    - name: Add redis to default runlevel and start
+      service:
+        name: redis
+        state: started
+        enabled: yes
+        
+  become: no
+  tags: redis

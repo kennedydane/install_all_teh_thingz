@@ -1,0 +1,14 @@
+[Unit]
+Description=Redis In-Memory Data Store
+After=network.target
+
+[Service]
+User=redis
+Group=redis
+ExecStart=/opt/redis/current/bin/redis-server /etc/redis/6379.conf
+ExecStop=/opt/redis/current/bin/redis-cli shutdown
+Restart=always
+Type=notify
+
+[Install]
+WantedBy=multi-user.target
