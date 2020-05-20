@@ -285,7 +285,68 @@
           apt:
             deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.2.5042-amd64.deb
       tags: R
+    
+    - name: Install lua
+      block:
+        - name: Install lua packages
+          apt:
+            name:
+              - liblua5.3-0
+              - liblua5.3-dev
+              - libtcl
+              - luarocks
+              - lua5.3
+              - tcl
+              - tcl-dev
+            state: present
+            update_cache: yes
+        - name: Install lua filesystem and luaposix
+          command: "luarocks install {{ item }}"
+          loop:
+            - luaposix
+            - luafilesystem
+      tags: lua
 
+    - name: Install lmod
+      block:
+        - name: Download lmod
+          get_url:
+            url: https://downloads.sourceforge.net/project/lmod/Lmod-8.2.tar.bz2?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flmod%2Ffiles%2Flatest%2Fdownload&ts=1588612245
+            dest: ~{{ ansible_user_id }}/Downloads/Lmod-8.2.tar.bz2
+            checksum: sha256:08556a1fefd099c8ef174582d6bf9818178a51cec154f7b52d7f6f4818334c18
+        - name: Uncompress lmod
+          unarchive:
+            src: ~{{ ansible_user_id }}/Downloads/Lmod-8.2.tar.bz2
+            dest: /tmp
+            creates: /tmp/Lmod-8.2
+        - name: Add build directory
+          file:
+            path: /tmp/Lmod-8.2/build
+            state: directory
+        - name: Configure lmod compile
+          command: "../configure --prefix=/opt/lmod"
+          args:
+            chdir: /tmp/Lmod-8.2/build
+            creates: /tmp/Lmod-8.2/build/Makefile
+        - name: Install lmod
+          make:
+            chdir: /tmp/Lmod-8.2/build
+            target: install
+          become: yes
+        - name: Add lmod to profile
+          file:
+            src: /opt/lmod/lmod/8.2/init/profile
+            dest: /etc/profile.d/z00_lmod.sh
+            state: link
+          become: yes
+        - name: Add custom /software to profile
+          copy:
+            src: z99_lmod.sh
+            dest: /etc/profile.d/z99_lmod.sh
+            mode: u=rw,g=r,o=r
+          become: yes
+      become: no
+      tags: lmod
 
 - name: Install communications software
   block:
