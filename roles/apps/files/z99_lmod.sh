@@ -1,0 +1,1 @@
+export MODULEPATH=/software/modules:${MODULEPATH}
