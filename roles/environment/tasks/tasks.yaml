@@ -134,6 +134,13 @@
                 src: zshenv
                 dest: ~/.zshenv
                 mode: u=rw,g=,o=
+            - name: Install global zshenv
+              copy:
+                src: zshenv.global
+                dest: /etc/zsh/zshenv
+                mode: u=rw,g=r,o=r
+              become: yes
+          tags: zshenv
       become: no
       tags: ohmyzsh
 
