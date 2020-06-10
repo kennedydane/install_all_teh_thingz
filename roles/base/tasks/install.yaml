@@ -5,6 +5,7 @@
   apt:
     name:
       - 'build-essential'
+      - 'cmake'
       - 'curl'
       - 'debootstrap'
       - 'git'
