@@ -33,15 +33,15 @@
       become: no
   tags: tmux
 
-- name: Setup pyenv and pipenv
+- name: Setup python requirements
   block:
-    - name: Install pyenv
-      git:
-        repo: 'https://github.com/pyenv/pyenv.git'
-        dest: '~/.pyenv'
-      tags: pyenv
-      become: no
-    - name: Install packages that pyenv requires when installing environments
+#     - name: Install pyenv
+#       git:
+#         repo: 'https://github.com/pyenv/pyenv.git'
+#         dest: '~/.pyenv'
+#       tags: pyenv
+#       become: no
+    - name: Install packages for compiling python
       apt:
         name:
           - 'build-essential'
