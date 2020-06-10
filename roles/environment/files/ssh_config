@@ -24,7 +24,7 @@ Host *.ilifu.ac.za
 Host slwrk-*
     Hostname %h
     User dane
-    ProxyCommand ssh dane@slurm.ilifu nc %h 22
+    ProxyCommand ssh dane@slurm.ilifu.ac.za nc %h 22
     IdentityFile ~/.ssh/ilifu/id_rsa
     ForwardX11   yes
 
