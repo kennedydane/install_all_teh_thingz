@@ -1,0 +1,15 @@
+new_tab slurm.ilifu
+cd ~/
+launch zsh -i -c "slurm"
+
+new_tab reports.ilifu
+cd ~/
+launch zsh -i -c "reports"
+
+new_tab slurm_reports
+layout tall
+cd ~/dev/ilifu/slurm_reporting
+launch zsh
+
+cd ~/dev/ilifu/slurm_reporting
+launch zsh
