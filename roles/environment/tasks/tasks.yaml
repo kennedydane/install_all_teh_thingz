@@ -237,3 +237,13 @@
         
   become: no
   tags: redis
+
+
+- name: Install miscelleous configuration files
+  block:
+    - name: Add .gitconfig
+      tags: gitconfig
+      become: no
+      copy:
+        src: gitconfig
+        dest: ~/.gitconfig
