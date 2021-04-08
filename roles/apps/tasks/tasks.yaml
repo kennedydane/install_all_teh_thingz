@@ -104,13 +104,13 @@
       block:
         - name: Download go tarball
           get_url:
-            url: https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
-            dest: ~/Downloads/go1.14.2.linux-amd64.tar.gz
-            checksum: sha256:6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3
+            url: https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
+            dest: ~/Downloads/go1.16.3.linux-amd64.tar.gz
+            checksum: sha256:951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2
           become: no
         - name: Extract go to /opt
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/go1.14.2.linux-amd64.tar.gz
+            src: ~{{ ansible_user_id }}/Downloads/go1.16.3.linux-amd64.tar.gz
             dest: /opt/
             creates: /opt/go
         - name: Add go binaries to PATH
@@ -156,11 +156,11 @@
               - pkg-config
             state: present
           become: yes
-        - name: Download singularity 3.5.3
+        - name: Download singularity 3.7.3
           get_url:
-            url: https://github.com/sylabs/singularity/releases/download/v3.5.3/singularity-3.5.3.tar.gz
-            dest: ~{{ ansible_user_id }}/Downloads/singularity-3.5.3.tar.gz
-            checksum: sha256:0c76f1e3808bf4c10e92b17150314b2b816be79f8101be448a6e9d7a96c9e486
+            url: https://github.com/hpcng/singularity/releases/download/v3.7.3/singularity-3.7.3.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/singularity-3.7.3.tar.gz
+            checksum: sha256:6667eb8875d2b66d73504f40c956b42b1351744f488d164204376215d885da5c
         - name: Ensure singularity exists in GOPATH
           file:
             path: ~/go/src/github.com/sylabs
@@ -168,7 +168,7 @@
             mode: u=rwx,g=rx,o=
         - name: Extract singularity to GOPATH
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/singularity-3.5.3.tar.gz
+            src: ~{{ ansible_user_id }}/Downloads/singularity-3.7.3.tar.gz
             dest: ~{{ ansible_user_id }}/go/src/github.com/sylabs
             creates: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity
         - name: run mconfig
@@ -204,21 +204,21 @@
       block:
         - name: Download Julia
           get_url:
-            url: https://julialang-s3.julialang.org/bin/linux/x64/1.4/julia-1.4.0-linux-x86_64.tar.gz
-            dest: ~{{ ansible_user_id }}/Downloads/julia-1.4.0-linux-x86_64.tar.gz
-            checksum: sha256:30d126dc3598f3cd0942de21cc38493658037ccc40eb0882b3b4c418770ca751
+            url: https://julialang-s3.julialang.org/bin/linux/x64/1.6/julia-1.6.0-linux-x86_64.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/julia-1.6.0-linux-x86_64.tar.gz
+            checksum: sha256:463b71dc70ca7094c0e0fd6d55d130051a7901e8dec5eb44d6002c57d1bd8585
         - name: Install Julia
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/julia-1.4.0-linux-x86_64.tar.gz
+            src: ~{{ ansible_user_id }}/Downloads/julia-1.6.0-linux-x86_64.tar.gz
             dest: /opt/
-            creates: /opt/julia-1.4.0
+            creates: /opt/julia-1.6.0
           become: yes
         - name: Add Julia to the PATH
           lineinfile:
             path: "{{ item }}"
             state: present
-            line: "export PATH=$PATH:/opt/julia-1.4.0/bin"
-            regexp: '^export PATH=$PATH:/opt/julia-1.4.0/bin$'
+            line: "export PATH=$PATH:/opt/julia-1.6.0/bin"
+            regexp: '^export PATH=$PATH:/opt/julia-1.6.0/bin$'
           become: yes
           loop:
             - /etc/zsh/zprofile
@@ -261,7 +261,7 @@
             state: present
         - name: Add R repository
           apt_repository:
-            repo: "deb http://cran.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran35/"
+            repo: "deb http://cran.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
             state: present
             filename: R-project
         - name: Install R
@@ -275,15 +275,15 @@
               - r-doc-html
             state: present
             update_cache: yes
-        - name: Download RStudio Desktop 1.2.5042
+        - name: Download RStudio Desktop 1.4.1106
           get_url:
-            url: https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.2.5042-amd64.deb
-            dest: ~{{ ansible_user_id }}/Downloads/rstudio-1.2.5042-amd64.deb
-            checksum: sha256:99e0f57b7426aa180db1b08163eba7a1a2e1ab033f2a632f6b852d7b23ca0f98
+            url: https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.4.1106-amd64.deb
+            dest: ~{{ ansible_user_id }}/Downloads/rstudio-1.4.1106-amd64.deb
+            checksum: sha256:3b5d38351d27868b1829b07471c0f5d883c0b1449e682634029a57afb96539a8
           become: no
-        - name: Install RStudio Desktop 1.2.5042
+        - name: Install RStudio Desktop 1.4.1106
           apt:
-            deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.2.5042-amd64.deb
+            deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.4.1106-amd64.deb
       tags: R
     
     - name: Install lua
@@ -311,31 +311,31 @@
       block:
         - name: Download lmod
           get_url:
-            url: https://downloads.sourceforge.net/project/lmod/Lmod-8.2.tar.bz2?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flmod%2Ffiles%2Flatest%2Fdownload&ts=1588612245
-            dest: ~{{ ansible_user_id }}/Downloads/Lmod-8.2.tar.bz2
-            checksum: sha256:08556a1fefd099c8ef174582d6bf9818178a51cec154f7b52d7f6f4818334c18
+            url: https://github.com/TACC/Lmod/archive/refs/tags/8.4.28.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/Lmod-8.4.28.tar.gz
+            checksum: sha256:b51e4b7073f99911f0915ab0e8ab36494e579b7d53123dd5509d4b5721ecaae3
         - name: Uncompress lmod
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/Lmod-8.2.tar.bz2
+            src: ~{{ ansible_user_id }}/Downloads/Lmod-8.4.28.tar.gz
             dest: /tmp
-            creates: /tmp/Lmod-8.2
+            creates: /tmp/Lmod-8.4.28
         - name: Add build directory
           file:
-            path: /tmp/Lmod-8.2/build
+            path: /tmp/Lmod-8.4.28/build
             state: directory
         - name: Configure lmod compile
           command: "../configure --prefix=/opt/lmod"
           args:
-            chdir: /tmp/Lmod-8.2/build
+            chdir: /tmp/Lmod-8.4.28/build
             creates: /tmp/Lmod-8.2/build/Makefile
         - name: Install lmod
           make:
-            chdir: /tmp/Lmod-8.2/build
+            chdir: /tmp/Lmod-8.4.28/build
             target: install
           become: yes
         - name: Add lmod to profile
           file:
-            src: /opt/lmod/lmod/8.2/init/profile
+            src: /opt/lmod/lmod/8.4.28/init/profile
             dest: /etc/profile.d/z00_lmod.sh
             state: link
           become: yes
