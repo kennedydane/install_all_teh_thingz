@@ -233,6 +233,7 @@
         name: redis
         state: started
         enabled: yes
+      become: yes
         
   become: no
   tags: redis
