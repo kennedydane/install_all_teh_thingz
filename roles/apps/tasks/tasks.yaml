@@ -2,12 +2,12 @@
 # tasks file for apps
 - name: Install development environments
   block:
-    - name: Install pycharm
-      snap:
-        name: pycharm-professional
-        state: present
-        classic: yes
-      tags: pycharm
+#    - name: Install pycharm
+#      snap:
+#        name: pycharm-professional
+#        state: present
+#        classic: yes
+#      tags: pycharm
 
     - name: Install sublime text 3
       block:
@@ -45,7 +45,7 @@
             name: code-insiders
             state: present
             classic: yes
-      tags: vscode
+      tags: vscode,snap
 
 
 - name: Install Programming thingz
@@ -355,7 +355,7 @@
         name: slack
         state: present
         classic: yes
-      tags: slack
+      tags: slack,snap
 
 - name: Install graphics programs
   block:
@@ -364,7 +364,7 @@
         name: inkscape
         state: present
         classic: no
-      tags: inkscape
+      tags: inkscape,snap
     - name: Install dia
       apt:
         name:
@@ -383,4 +383,4 @@
         name: gimp
         state: present
         classic: no
-      tags: gimp
+      tags: gimp,snap
