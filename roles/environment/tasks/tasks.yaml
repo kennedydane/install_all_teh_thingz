@@ -247,3 +247,9 @@
       copy:
         src: gitconfig
         dest: ~/.gitconfig
+    - name: Add kitty.config
+      tags: kitty
+      become: no
+      copy:
+        src: kitty.conf
+        dest: ~/.config/kitty/kitty.conf
