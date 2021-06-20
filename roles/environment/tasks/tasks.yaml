@@ -247,6 +247,12 @@
       copy:
         src: gitconfig
         dest: ~/.gitconfig
+    - name: Ensure kitty config dir exists
+      tags: kitty
+      become: no
+      file:
+        path: ~/.config/kitty
+        state: directory
     - name: Add kitty.config
       tags: kitty
       become: no

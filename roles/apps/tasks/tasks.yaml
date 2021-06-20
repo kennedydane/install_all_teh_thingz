@@ -45,8 +45,7 @@
             name: code-insiders
             state: present
             classic: yes
-      tags: vscode,snap
-
+      tags: vscode,snap,never
 
 - name: Install Programming thingz
   block:
@@ -98,7 +97,7 @@
             name: "{{ ansible_user_id }}"
             groups: docker
             append: yes
-      tags: docker
+      tags: docker,never
 
     - name: Install golang
       block:
@@ -198,7 +197,7 @@
             - /etc/zsh/zprofile
             - /etc/profile
       become: no
-      tags: singularity
+      tags: singularity,never
 
     - name: Install Julia
       block:
@@ -224,7 +223,7 @@
             - /etc/zsh/zprofile
             - /etc/profile
       become: no
-      tags: julia
+      tags: julia,never
 
     - name: Install R
       block:
@@ -284,8 +283,8 @@
         - name: Install RStudio Desktop 1.4.1106
           apt:
             deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.4.1106-amd64.deb
-      tags: R
-    
+      tags: R,never
+
     - name: Install lua
       block:
         - name: Install lua packages
@@ -355,7 +354,7 @@
         name: slack
         state: present
         classic: yes
-      tags: slack,snap
+      tags: slack,snap,never
 
 - name: Install graphics programs
   block:
@@ -364,13 +363,13 @@
         name: inkscape
         state: present
         classic: no
-      tags: inkscape,snap
+      tags: inkscape,snap,never
     - name: Install dia
       apt:
         name:
           - dia
         state: present
-      tags: dia
+      tags: dia,never
     - name: Install graphviz
       apt:
         name:
@@ -383,4 +382,4 @@
         name: gimp
         state: present
         classic: no
-      tags: gimp,snap
+      tags: gimp,snap,never
