@@ -1,51 +1,5 @@
 ---
 # tasks file for apps
-- name: Install development environments
-  block:
-#    - name: Install pycharm
-#      snap:
-#        name: pycharm-professional
-#        state: present
-#        classic: yes
-#      tags: pycharm
-
-    - name: Install sublime text 3
-      block:
-        - name: Add GPG key
-          apt_key:
-            url: https://download.sublimetext.com/sublimehq-pub.gpg
-            state: present
-        - name: Make sure https sources work
-          apt:
-            name: apt-transport-https
-            state: present
-        - name: Add sublime to sources
-          template:
-            src: sublime-text.list
-            dest: /etc/apt/sources.list.d/sublime-text.list
-            owner: root
-            group: root
-            mode: u=rw,g=rw,o=r
-        - name: Install sublime
-          apt:
-            name: sublime-text
-            update_cache: yes
-            state: latest
-      tags: sublime
-            
-    - name: Install vscode (and insiders)
-      block:
-        - name: install vscode snap
-          snap:
-            name: code
-            state: present
-            classic: yes
-        - name: install vscode-insiders snap
-          snap:
-            name: code-insiders
-            state: present
-            classic: yes
-      tags: vscode,snap,never
 
 - name: Install Programming thingz
   block:
@@ -100,16 +54,18 @@
       tags: docker,never
 
     - name: Install golang
+      vars:
+        go_version: 1.17.8
       block:
         - name: Download go tarball
           get_url:
-            url: https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
-            dest: ~/Downloads/go1.16.3.linux-amd64.tar.gz
-            checksum: sha256:951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2
+            url: https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz
+            dest: ~/Downloads/go{{ go_version }}.linux-amd64.tar.gz
+            checksum: sha256:980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99
           become: no
         - name: Extract go to /opt
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/go1.16.3.linux-amd64.tar.gz
+            src: ~{{ ansible_user_id }}/Downloads/go{{ go_version }}.linux-amd64.tar.gz
             dest: /opt/
             creates: /opt/go
         - name: Add go binaries to PATH
@@ -141,160 +97,18 @@
           become: no
       tags: golang
     
-    - name: Install singularity
-      block:
-        - name: Install singularity prerequesites
-          apt:
-            name:
-              - build-essential
-              - libssl-dev
-              - uuid-dev
-              - libgpgme11-dev
-              - squashfs-tools
-              - libseccomp-dev
-              - pkg-config
-            state: present
-          become: yes
-        - name: Download singularity 3.7.3
-          get_url:
-            url: https://github.com/hpcng/singularity/releases/download/v3.7.3/singularity-3.7.3.tar.gz
-            dest: ~{{ ansible_user_id }}/Downloads/singularity-3.7.3.tar.gz
-            checksum: sha256:6667eb8875d2b66d73504f40c956b42b1351744f488d164204376215d885da5c
-        - name: Ensure singularity exists in GOPATH
-          file:
-            path: ~/go/src/github.com/sylabs
-            state: directory
-            mode: u=rwx,g=rx,o=
-        - name: Extract singularity to GOPATH
-          unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/singularity-3.7.3.tar.gz
-            dest: ~{{ ansible_user_id }}/go/src/github.com/sylabs
-            creates: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity
-        - name: run mconfig
-          command:
-            argv:
-              - ./mconfig
-              - --prefix=/opt/singularity
-            creates: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir/Makefile
-          args:
-            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity
-        - name: Make singularity
-          make:
-            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir
-        - name: Install singularity
-          make:
-            chdir: ~{{ ansible_user_id }}/go/src/github.com/sylabs/singularity/builddir
-            target: install
-          become: yes
-        - name: Add singularity to the PATH
-          lineinfile:
-            path: "{{ item }}"
-            state: present
-            line: "export PATH=$PATH:/opt/singularity/bin"
-            regexp: '^export PATH=$PATH:/opt/singularity/bin$'
-          become: yes
-          loop:
-            - /etc/zsh/zprofile
-            - /etc/profile
-      become: no
-      tags: singularity,never
-
-    - name: Install Julia
-      block:
-        - name: Download Julia
-          get_url:
-            url: https://julialang-s3.julialang.org/bin/linux/x64/1.6/julia-1.6.0-linux-x86_64.tar.gz
-            dest: ~{{ ansible_user_id }}/Downloads/julia-1.6.0-linux-x86_64.tar.gz
-            checksum: sha256:463b71dc70ca7094c0e0fd6d55d130051a7901e8dec5eb44d6002c57d1bd8585
-        - name: Install Julia
-          unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/julia-1.6.0-linux-x86_64.tar.gz
-            dest: /opt/
-            creates: /opt/julia-1.6.0
-          become: yes
-        - name: Add Julia to the PATH
-          lineinfile:
-            path: "{{ item }}"
-            state: present
-            line: "export PATH=$PATH:/opt/julia-1.6.0/bin"
-            regexp: '^export PATH=$PATH:/opt/julia-1.6.0/bin$'
-          become: yes
-          loop:
-            - /etc/zsh/zprofile
-            - /etc/profile
-      become: no
-      tags: julia,never
-
-    - name: Install R
-      block:
-        - name: Install some prerequisites
-          apt:
-            name:
-              - dirmngr
-              - git
-              - texlive
-              - texlive-extra-utils
-              - texlive-fonts-extra
-              - texlive-latex-extra
-              - texlive-pictures
-              - texlive-pstricks
-              - texlive-publishers
-              - texlive-science
-              - texlive-xetex
-              - ca-certificates
-              - gdebi-core
-              - systemd
-              - wget
-              - libcurl4-openssl-dev
-              - libnetcdf-dev
-              - libssl-dev
-              - libxml2-dev
-              - libcairo2-dev
-              - libxt-dev
-              - patchelf
-            state: present
-        - name: Add R GPG key
-          apt_key:
-            keyserver: keyserver.ubuntu.com
-            id: E298A3A825C0D65DFD57CBB651716619E084DAB9
-            state: present
-        - name: Add R repository
-          apt_repository:
-            repo: "deb http://cran.r-project.org/bin/linux/ubuntu {{ ansible_distribution_release }}-cran40/"
-            state: present
-            filename: R-project
-        - name: Install R
-          apt:
-            name:
-              - r-base
-              - r-base-core
-              - r-base-dev
-              - r-recommended
-              - r-base-html
-              - r-doc-html
-            state: present
-            update_cache: yes
-        - name: Download RStudio Desktop 1.4.1106
-          get_url:
-            url: https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.4.1106-amd64.deb
-            dest: ~{{ ansible_user_id }}/Downloads/rstudio-1.4.1106-amd64.deb
-            checksum: sha256:3b5d38351d27868b1829b07471c0f5d883c0b1449e682634029a57afb96539a8
-          become: no
-        - name: Install RStudio Desktop 1.4.1106
-          apt:
-            deb: ~{{ ansible_user_id }}/Downloads/rstudio-1.4.1106-amd64.deb
-      tags: R,never
-
     - name: Install lua
+      vars:
+        lua_version: "5.4"
       block:
         - name: Install lua packages
           apt:
             name:
-              - liblua5.3-0
-              - liblua5.3-dev
+              - liblua{{ lua_version }}-0
+              - liblua{{ lua_version }}-dev
               - libtcl
               - luarocks
-              - lua5.3
+              - lua{{ lua_version }}
               - tcl
               - tcl-dev
             state: present
@@ -307,34 +121,36 @@
       tags: lua
 
     - name: Install lmod
+      vars:
+        lmod_version: 8.6.14
       block:
         - name: Download lmod
           get_url:
-            url: https://github.com/TACC/Lmod/archive/refs/tags/8.4.28.tar.gz
-            dest: ~{{ ansible_user_id }}/Downloads/Lmod-8.4.28.tar.gz
-            checksum: sha256:b51e4b7073f99911f0915ab0e8ab36494e579b7d53123dd5509d4b5721ecaae3
+            url: https://github.com/TACC/Lmod/archive/refs/tags/{{ lmod_version }}.tar.gz
+            dest: ~{{ ansible_user_id }}/Downloads/Lmod-{{ lmod_version }}.tar.gz
+            checksum: sha256:29a15b2bad9bdd7cfef5ebc4aa41561c59e3d4c8271fa937a0ec1c5b79373b1f
         - name: Uncompress lmod
           unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/Lmod-8.4.28.tar.gz
+            src: ~{{ ansible_user_id }}/Downloads/Lmod-{{ lmod_version }}.tar.gz
             dest: /tmp
-            creates: /tmp/Lmod-8.4.28
+            creates: /tmp/Lmod-{{ lmod_version }}
         - name: Add build directory
           file:
-            path: /tmp/Lmod-8.4.28/build
+            path: /tmp/Lmod-{{ lmod_version }}/build
             state: directory
         - name: Configure lmod compile
           command: "../configure --prefix=/opt/lmod"
           args:
-            chdir: /tmp/Lmod-8.4.28/build
-            creates: /tmp/Lmod-8.2/build/Makefile
+            chdir: /tmp/Lmod-{{ lmod_version }}/build
+            creates: /tmp/Lmod-{{ lmod_version }}/build/Makefile
         - name: Install lmod
           make:
-            chdir: /tmp/Lmod-8.4.28/build
+            chdir: /tmp/Lmod-{{ lmod_version }}/build
             target: install
           become: yes
         - name: Add lmod to profile
           file:
-            src: /opt/lmod/lmod/8.4.28/init/profile
+            src: /opt/lmod/lmod/{{ lmod_version }}/init/profile
             dest: /etc/profile.d/z00_lmod.sh
             state: link
           become: yes
@@ -347,39 +163,11 @@
       become: no
       tags: lmod
 
-- name: Install communications software
-  block:
-    - name: Install Slack
-      snap:
-        name: slack
-        state: present
-        classic: yes
-      tags: slack,snap,never
-
 - name: Install graphics programs
   block:
     - name: Install inkscape
-      snap:
-        name: inkscape
-        state: present
-        classic: no
-      tags: inkscape,snap,never
-    - name: Install dia
       apt:
         name:
-          - dia
-        state: present
-      tags: dia,never
-    - name: Install graphviz
-      apt:
-        name:
-          - graphviz
-          - graphviz-dev
-        state: present
-      tags: graphviz
-    - name: Install gimp
-      snap:
-        name: gimp
-        state: present
-        classic: no
-      tags: gimp,snap,never
+          - inkscape
+          - gimp
+        state: latest
