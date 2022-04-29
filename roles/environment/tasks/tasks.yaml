@@ -87,6 +87,7 @@
         - "SourceCodePro"
         - "Ubuntu"
         - "UbuntuMono"
+        - "FiraCode"
   become: no
   tags: nerdfonts
 
