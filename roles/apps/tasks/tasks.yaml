@@ -53,50 +53,6 @@
             append: yes
       tags: docker,never
 
-    - name: Install golang
-      vars:
-        go_version: 1.17.8
-      block:
-        - name: Download go tarball
-          get_url:
-            url: https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz
-            dest: ~/Downloads/go{{ go_version }}.linux-amd64.tar.gz
-            checksum: sha256:980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99
-          become: no
-        - name: Extract go to /opt
-          unarchive:
-            src: ~{{ ansible_user_id }}/Downloads/go{{ go_version }}.linux-amd64.tar.gz
-            dest: /opt/
-            creates: /opt/go
-        - name: Add go binaries to PATH
-          lineinfile:
-            path: "{{ item }}"
-            state: present
-            line: "export PATH=$PATH:/opt/go/bin"
-            regexp: '^export PATH=$PATH:/opt/go/bin$'
-          loop:
-            - /etc/zsh/zprofile
-            - /etc/profile
-        - name: Set up GOPATH
-          file:
-            path: ~/go
-            state: directory
-            mode: u=rwx,g=rx,o=
-          become: no
-        - name: add GOPATH to profile
-          lineinfile:
-            path: ~/.zshenv
-            state: present
-            line: "export GOPATH=~{{ ansible_user_id }}/go"
-          become: no
-        - name: add GOPATH/bin to profile
-          lineinfile:
-            path: ~/.zshenv
-            state: present
-            line: "export PATH=${PATH}:${GOPATH}/bin"
-          become: no
-      tags: golang
-    
     - name: Install lua
       vars:
         lua_version: "5.4"
@@ -122,13 +78,14 @@
 
     - name: Install lmod
       vars:
-        lmod_version: 8.6.14
+        lmod_version: 8.7.32
+        checksum: "sha256:727df3dafb634749947418b334a0828d63753c38f02d4d7a27c6c507e9512d3b"
       block:
         - name: Download lmod
           get_url:
             url: https://github.com/TACC/Lmod/archive/refs/tags/{{ lmod_version }}.tar.gz
             dest: ~{{ ansible_user_id }}/Downloads/Lmod-{{ lmod_version }}.tar.gz
-            checksum: sha256:29a15b2bad9bdd7cfef5ebc4aa41561c59e3d4c8271fa937a0ec1c5b79373b1f
+            checksum: "{{ checksum }}"
         - name: Uncompress lmod
           unarchive:
             src: ~{{ ansible_user_id }}/Downloads/Lmod-{{ lmod_version }}.tar.gz

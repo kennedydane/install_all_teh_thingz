@@ -35,12 +35,6 @@
 
 - name: Setup python requirements
   block:
-#     - name: Install pyenv
-#       git:
-#         repo: 'https://github.com/pyenv/pyenv.git'
-#         dest: '~/.pyenv'
-#       tags: pyenv
-#       become: no
     - name: Install packages for compiling python
       apt:
         name:
@@ -111,10 +105,6 @@
             creates: ~/.oh-my-zsh
         - name: Install plugins
           block:
-#            - name: Install powerlevel 9k
-#              git:
-#                repo: https://github.com/bhilburn/powerlevel9k.git
-#                dest: ~/.oh-my-zsh/custom/themes/powerlevel9k
             - name: Install powerlevel 10k
               git:
                 repo: https://github.com/romkatv/powerlevel10k.git
@@ -150,43 +140,48 @@
       tags: ohmyzsh
 
 - name: Download and Install redis
+  vars:
+    version: "7.2.2"
+    checksum: "sha256:ca999be08800edc6d265379c4c7aafad92f0ee400692e4e2d69829ab4b4c3d08"
   block:
     - name: Download redis
       get_url:
-        url: http://download.redis.io/releases/redis-5.0.9.tar.gz
-        dest: ~{{ ansible_user_id }}/Downloads/redis-5.0.9.tar.gz
-        checksum: sha256:53d0ae164cd33536c3d4b720ae9a128ea6166ebf04ff1add3b85f1242090cb85
+        url: http://download.redis.io/releases/redis-{{ version }}.tar.gz
+        dest: ~{{ ansible_user_id }}/Downloads/redis-{{ version }}.tar.gz
+        checksum: "{{ checksum }}"
     - name: Uncompress redis
       unarchive:
-        src: ~{{ ansible_user_id }}/Downloads/redis-5.0.9.tar.gz
+        src: ~{{ ansible_user_id }}/Downloads/redis-{{ version }}.tar.gz
         dest: /tmp
-        creates: /tmp/redis-5.0.9
+        creates: /tmp/redis-{{ version }}
     - name:
       lineinfile:
-        path: /tmp/redis-5.0.9/src/Makefile
+        path: /tmp/redis-{{ version }}/src/Makefile
         regex: "^PREFIX?=/usr/local$"
-        line: "PREFIX=/opt/redis/5.0.9"
+        line: "PREFIX=/opt/redis/{{ version }}"
     - name: Compile redis
       make:
-        chdir: /tmp/redis-5.0.9
+        chdir: /tmp/redis-{{version}}
+        params:
+          USE_SYSTEMD: "yes"
     - name: Install redis
       make:
-        chdir: /tmp/redis-5.0.9
+        chdir: /tmp/redis-{{version}}
         target: install
       become: yes
     - name: Add redis to PATH
       lineinfile:
         path: "{{ item }}"
         state: present
-        line: "export PATH=$PATH:/opt/redis/5.0.9/bin"
-        regexp: '^export PATH=$PATH:/opt/redis/5.0.9/bin$'
+        line: "export PATH=$PATH:/opt/redis/{{ version }}/bin"
+        regexp: '^export PATH=$PATH:/opt/redis/{{ version }}/bin$'
       loop:
         - /etc/zsh/zprofile
         - /etc/profile
       become: yes
     - name : Configure current redis
       file:
-        src: /opt/redis/5.0.9
+        src: /opt/redis/{{ version }}
         dest: /opt/redis/current
         state: link
       become: yes
@@ -235,7 +230,6 @@
         state: started
         enabled: yes
       become: yes
-        
   become: no
   tags: redis
 
