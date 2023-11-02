@@ -103,6 +103,12 @@ plugins=(
   per-directory-history
   colorize
   colored-man-pages
+  terraform
+  systemd
+  ansible
+  helm
+  kubectl
+  pipenv
 )
 
 source $ZSH/oh-my-zsh.sh
