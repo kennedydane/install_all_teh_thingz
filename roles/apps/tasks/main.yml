@@ -1,6 +1,6 @@
 ---
 # tasks file for apps
 - name: Install my commonly used apps
-  include: tasks.yaml
+  import_tasks: tasks.yaml
   become: yes
   tags: apps

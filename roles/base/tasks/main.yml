@@ -2,11 +2,11 @@
 # tasks file for roles/base
 
 - name: Upgrade and install all the things
-  include: update.yaml
+  import_tasks: update.yaml
   become: yes
   tags: update,upgrade
 
 - name: Install common packages
-  include: install.yaml
+  import_tasks: install.yaml
   become: yes
   tags: install_common
