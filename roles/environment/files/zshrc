@@ -163,6 +163,14 @@ ilifu() {
   nohup kitty --session ~/ilifu.session &!
 }
 
+clickup() {
+  nohup ~/bin/clickup &> /dev/null &!
+}
+
+pycharm() {
+  nohup /home/dane/.local/share/JetBrains/Toolbox/scripts/pycharm "$@" &> /dev/null &!
+}
+
 
 #sstat() {
 #  ssh dane@slurm.ilifu.ac.za -t "bash -l -c 'sstat $@'"
